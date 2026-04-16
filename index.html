@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REYNOLD LIBRARY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Orbitron:wght@600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a; --card: #1e293b; --primary: #38bdf8; --accent: #7dd3fc;
+            --text: #f1f5f9; --text-dim: #94a3b8; --border: rgba(56, 189, 248, 0.2);
+            --input-bg: rgba(15, 23, 42, 0.6);
+        }
+        [data-theme="light"] {
+            --bg: #f8fafc; --card: #ffffff; --primary: #0284c7; --accent: #0ea5e9;
+            --text: #0f172a; --text-dim: #64748b; --border: rgba(2, 132, 199, 0.1);
+            --input-bg: #f1f5f9;
+        }
+
+        * { box-sizing: border-box; transition: 0.3s; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; min-height: 100vh; }
+        .container { max-width: 1200px; margin: auto; padding: 0 20px; }
+
+        nav { backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 15px 0; position: sticky; top: 0; z-index: 1000; }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 20px; color: var(--primary); text-decoration: none; letter-spacing: 1px; }
+
+        .glass-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin: 30px 0; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        
+        input, select { background: var(--input-bg); border: 1px solid var(--border); padding: 12px; color: var(--text); border-radius: 10px; outline: none; font-size: 14px; }
+        input:focus { border-color: var(--primary); }
+
+        .btn { padding: 12px 20px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-size: 12px; text-transform: uppercase; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(56, 189, 248, 0.3); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; margin-top: 30px; }
+        .card { background: var(--card); border-radius: 20px; overflow: hidden; position: relative; border: 1px solid var(--border); height: 340px; }
+        .card:hover { transform: translateY(-8px); border-color: var(--primary); }
+        .card-img { width: 100%; height: 100%; object-fit: cover; background: #222; }
+        
+        .card-body { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 15px; }
+        .badge { position: absolute; top: 12px; left: 12px; background: var(--primary); color: #fff; padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 10px; z-index: 2; }
+
+        .actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; opacity: 0; z-index: 2; }
+        .card:hover .actions { opacity: 1; }
+        .act-btn { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); text-decoration: none; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+
+        #printableTable { display: none; width: 100%; border-collapse: collapse; margin-top: 20px; }
+        @media print {
+            .no-print { display: none; }
+            #printableTable { display: table; color: #000; }
+            #printableTable th, #printableTable td { border: 1px solid #000; padding: 8px; text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+<table id="printableTable">
+    <thead>
+        <tr><th>No</th><th>Judul</th><th>Tahun</th><th>Genre</th><th>Kode</th></tr>
+    </thead>
+    <tbody id="printBody"></tbody>
+</table>
+
+<nav class="no-print">
+    <div class="container nav-content">
+        <a href="#" class="logo">REYNOLD <strong>LIBRARY</strong></a>
+        <div style="display:flex; gap:10px;">
+            <button onclick="toggleTheme()" class="btn" style="background:var(--input-bg); color:var(--text); border:1px solid var(--border);">🌓 TEMA</button>
+            <a href="https://wa.me/6285269142008" class="btn btn-primary" style="text-decoration:none; display: flex; align-items:center;">KONTAK</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container no-print">
+    <div style="padding: 40px 0; text-align: center;">
+        <h1 style="margin:0; font-weight: 800; font-size: 32px;">MILIKK MAS<span style="color:var(--primary)">MAS JAWAA</span></h1>
+        <p style="color: var(--text-dim); margin-top: 5px;">VERSI GITHUB PAGES (STORAGE AKTIF)</p>
+    </div>
+
+    <div class="glass-box">
+        <form id="libForm">
+            <input type="hidden" id="editId"> 
+            <div class="form-grid">
+                <input type="text" id="judul" placeholder="Judul Buku" required>
+                <select id="kategori">
+                    <option value="Action">Action</option>
+                    <option value="Adventure">Adventure</option>
+                    <option value="Fantasy">Fantasy</option>
+                    <option value="Romance">Romance</option>
+                    <option value="Sains">Sains</option>
+                    <option value="Novel">Novel</option>
+                    <option value="Filsafat">Filsafat</option>
+                    <option value="Horror">Horror</option>
+                </select>
+                <input type="number" id="chapter" placeholder="Halaman/Chapter">
+                <input type="text" id="tahun_terbit" placeholder="Tahun Rilis">
+                <input type="text" id="kode_buku" placeholder="Kode Buku" required>
+                <input type="text" id="img_url" placeholder="URL Gambar Cover (Link)">
+                <button type="submit" id="submitBtn" class="btn btn-primary">SIMPAN</button>
+            </div>
+        </form>
+    </div>
+
+    <div style="display:flex; gap:15px; margin-bottom: 20px;">
+        <input type="text" id="searchBox" placeholder="Cari Koleksi..." onkeyup="renderData()" style="flex-grow: 1; border-radius: 12px; padding: 12px 20px; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); outline: none;">
+        <button onclick="window.print()" class="btn" style="background:#0ea5e9; color:#fff;">PRINT PDF</button>
+        <button onclick="exportJSON()" class="btn" style="background:#6366f1; color:#fff;">JSON</button>
+    </div>
+
+    <div class="grid" id="dataGrid"></div>
+
+    <footer style="text-align:center; padding:40px 0; border-top:1px solid var(--border); margin-top:50px; color:var(--text-dim); font-size:12px;">
+        REYNOLD LIBRARY &copy; 2026
+    </footer>
+</div>
+
+<script>
+    // Load data dari LocalStorage saat pertama kali dibuka
+    let library = JSON.parse(localStorage.getItem('reynoldLib')) || [];
+
+    // Fungsi Ganti Tema
+    function toggleTheme() {
+        const h = document.documentElement;
+        const n = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        h.setAttribute('data-theme', n);
+        localStorage.setItem('theme', n);
+    }
+    
+    // Set tema yang tersimpan
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+
+    const libForm = document.getElementById('libForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // LOGIKA SIMPAN & EDIT
+    libForm.onsubmit = (e) => {
+        e.preventDefault();
+        const idValue = document.getElementById('editId').value;
+        
+        const dataBuku = {
+            id: idValue ? parseInt(idValue) : Date.now(),
+            judul: document.getElementById('judul').value,
+            kategori: document.getElementById('kategori').value,
+            chapter: document.getElementById('chapter').value,
+            tahun_terbit: document.getElementById('tahun_terbit').value,
+            kode_buku: document.getElementById('kode_buku').value,
+            gambar: document.getElementById('img_url').value || 'https://via.placeholder.com/220x340?text=NO+COVER'
+        };
+
+        if(idValue) {
+            // Jika ada ID, maka Update (Edit)
+            library = library.map(item => item.id === parseInt(idValue) ? dataBuku : item);
+            submitBtn.innerText = "SIMPAN";
+        } else {
+            // Jika tidak ada ID, maka Simpan Baru
+            library.push(dataBuku);
+        }
+
+        // Simpan ke LocalStorage agar data tidak hilang
+        localStorage.setItem('reynoldLib', JSON.stringify(library));
+        
+        libForm.reset();
+        document.getElementById('editId').value = '';
+        renderData();
+    };
+
+    // FUNGSI TAMPILKAN DATA (RENDER)
+    function renderData() {
+        const grid = document.getElementById('dataGrid');
+        const printBody = document.getElementById('printBody');
+        const search = document.getElementById('searchBox').value.toLowerCase();
+        
+        grid.innerHTML = '';
+        printBody.innerHTML = '';
+
+        const filteredData = library.filter(item => 
+            item.judul.toLowerCase().includes(search) || 
+            item.kategori.toLowerCase().includes(search) ||
+            item.kode_buku.toLowerCase().includes(search)
+        );
+
+        filteredData.forEach((item, index) => {
+            // Render Card ke layar
+            grid.innerHTML += `
+                <div class="card">
+                    <div class="badge">${item.kategori}</div>
+                    <div class="actions">
+                        <span onclick="editData(${item.id})" class="act-btn" title="Edit">✏️</span>
+                        <span onclick="deleteData(${item.id})" class="act-btn" title="Hapus">🗑️</span>
+                    </div>
+                    <img src="${item.gambar}" class="card-img" onerror="this.src='https://via.placeholder.com/220x340?text=IMAGE+ERROR'">
+                    <div class="card-body">
+                        <h3 style="margin:0; font-size:16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.judul}</h3>
+                        <div style="font-size:11px; color:var(--primary); margin-top:5px; font-weight:700;">
+                            ${item.kode_buku} • ${item.tahun_terbit} • Hal: ${item.chapter}
+                        </div>
+                    </div>
+                </div>`;
+
+            // Render ke tabel tersembunyi untuk Print PDF
+            printBody.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.judul}</td>
+                    <td>${item.tahun_terbit}</td>
+                    <td>${item.kategori}</td>
+                    <td>${item.kode_buku}</td>
+                </tr>`;
+        });
+    }
+
+    // FUNGSI EDIT
+    window.editData = (id) => {
+        const item = library.find(i => i.id === id);
+        if(item) {
+            document.getElementById('editId').value = item.id;
+            document.getElementById('judul').value = item.judul;
+            document.getElementById('kategori').value = item.kategori;
+            document.getElementById('chapter').value = item.chapter;
+            document.getElementById('tahun_terbit').value = item.tahun_terbit;
+            document.getElementById('kode_buku').value = item.kode_buku;
+            document.getElementById('img_url').value = item.gambar === 'https://via.placeholder.com/220x340?text=NO+COVER' ? '' : item.gambar;
+            
+            submitBtn.innerText = "UPDATE DATA";
+            window.scrollTo({top: 100, behavior: 'smooth'});
+        }
+    };
+
+    // FUNGSI HAPUS
+    window.deleteData = (id) => {
+        if(confirm('Hapus koleksi ini secara permanen?')) {
+            library = library.filter(i => i.id !== id);
+            localStorage.setItem('reynoldLib', JSON.stringify(library));
+            renderData();
+        }
+    };
+
+    // FUNGSI EXPORT JSON
+    function exportJSON() {
+        if (library.length === 0) return alert("Tidak ada data untuk diekspor");
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(library, null, 4));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "reynold_library.json");
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
+
+    // Jalankan render pertama kali saat web dibuka
+    renderData();
+</script>
+</body>
+</html>
