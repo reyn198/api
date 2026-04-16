@@ -1,49 +1,4 @@
-<?php
-$host = "localhost"; $user = "root"; $pass = ""; $db = "db_perpustakaan";
-$conn = new mysqli($host, $user, $pass, $db);
-if ($conn->connect_error) { die("Koneksi Gagal: " . $conn->connect_error); }
 
-// --- LOGIKA EXPORT JSON ---
-if (isset($_GET['print_json'])) {
-    header('Content-Type: application/json');
-    $res_all = $conn->query("SELECT * FROM buku ORDER BY id DESC");
-    $all_data = []; while($row = $res_all->fetch_assoc()) { $all_data[] = $row; }
-    echo json_encode(["library" => "Reynold Library", "total" => count($all_data), "books" => $all_data], JSON_PRETTY_PRINT);
-    exit();
-}
-
-// --- LOGIKA CRUD ---
-if (isset($_POST['save'])) {
-    $id = $_POST['id']; $k = $conn->real_escape_string($_POST['kode_buku']); 
-    $j = $conn->real_escape_string($_POST['judul']); $p = $conn->real_escape_string($_POST['penulis']); 
-    $kat = $conn->real_escape_string($_POST['kategori']); $th = $conn->real_escape_string($_POST['tahun_terbit']);
-    $ch = (int)$_POST['chapter']; $hal = (int)$_POST['halaman']; $s = (int)$_POST['stok'];
-    $gambar = $_POST['gambar_lama'] ?? '';
-    if (isset($_FILES['cover']['name']) && $_FILES['cover']['name'] != "") {
-        $target_dir = "uploads/"; if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
-        $file_name = time() . "_" . basename($_FILES["cover"]["name"]);
-        if (move_uploaded_file($_FILES["cover"]["tmp_name"], $target_dir . $file_name)) {
-            if($gambar && file_exists($target_dir.$gambar)) unlink($target_dir.$gambar);
-            $gambar = $file_name;
-        }
-    }
-    if ($id) { $conn->query("UPDATE buku SET kode_buku='$k', judul='$j', penulis='$p', tahun_terbit='$th', kategori='$kat', chapter='$ch', halaman='$hal', stok='$s', gambar='$gambar' WHERE id=$id"); }
-    else { $conn->query("INSERT INTO buku (kode_buku,judul,penulis,penerbit,tahun_terbit,kategori,chapter,halaman,stok,gambar) VALUES ('$k','$j','$p','Umum','$th','$kat','$ch','$hal','$s', '$gambar')"); }
-    header("Location: index.php"); exit();
-}
-
-if (isset($_GET['hapus'])) { 
-    $res = $conn->query("SELECT gambar FROM buku WHERE id=" . (int)$_GET['hapus']);
-    $row = $res->fetch_assoc(); if($row['gambar'] && file_exists("uploads/".$row['gambar'])) unlink("uploads/".$row['gambar']);
-    $conn->query("DELETE FROM buku WHERE id=" . (int)$_GET['hapus']); header("Location: index.php"); exit();
-}
-
-$q = $conn->real_escape_string($_GET['q'] ?? '');
-$sql = "SELECT * FROM buku WHERE judul LIKE '%$q%' OR penulis LIKE '%$q%' OR kategori LIKE '%$q%' ORDER BY id DESC";
-$res = $conn->query($sql); $data = []; while($r = $res->fetch_assoc()) { $data[] = $r; }
-$edit = isset($_GET['edit']) ? $conn->query("SELECT * FROM buku WHERE id=" . (int)$_GET['edit'])->fetch_assoc() : null;
-$categories = ["Action", "Adventure", "Fantasy", "Isekai", "Romance", "Horror", "Filsafat", "Sejarah", "Sains", "Novel", "Panduan", "Cerita Rakyat"];
-?>
 
 <!DOCTYPE html>
 <html lang="id" data-theme="dark">
